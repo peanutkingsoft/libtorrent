@@ -308,6 +308,7 @@ set(sources
 	disk_buffer_holder
 	entry
 	error_code
+	file_view_pool
 	file_storage
 	file_progress
 	lazy_bdecode
