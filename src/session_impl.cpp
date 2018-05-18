@@ -1438,24 +1438,13 @@ namespace aux {
 				// have SO_BINDTODEVICE functionality, use it now.
 #if TORRENT_HAS_BINDTODEVICE
 				ret->sock->set_option(bind_to_device(lep.device.c_str()), ec);
-				if (ec)
-				{
 #ifndef TORRENT_DISABLE_LOGGING
-					if (should_log())
-					{
-						session_log("bind to device failed (device: %s): %s"
-							, lep.device.c_str(), ec.message().c_str());
-					}
-#endif // TORRENT_DISABLE_LOGGING
-
-					last_op = operation_t::sock_bind_to_device;
-					if (m_alerts.should_post<listen_failed_alert>())
-					{
-						m_alerts.emplace_alert<listen_failed_alert>(lep.device, bind_ep
-							, last_op, ec, sock_type);
-					}
-					return ret;
+				if (ec && should_log())
+				{
+					session_log("bind to device failed (device: %s): %s"
+						, lep.device.c_str(), ec.message().c_str());
 				}
+#endif // TORRENT_DISABLE_LOGGING
 #endif
 			}
 
@@ -1589,24 +1578,13 @@ namespace aux {
 		if (!lep.device.empty())
 		{
 			ret->udp_sock->sock.set_option(bind_to_device(lep.device.c_str()), ec);
-			if (ec)
-			{
 #ifndef TORRENT_DISABLE_LOGGING
-				if (should_log())
-				{
-					session_log("bind to device failed (device: %s): %s"
-						, lep.device.c_str(), ec.message().c_str());
-				}
-#endif // TORRENT_DISABLE_LOGGING
-
-				last_op = operation_t::sock_bind_to_device;
-				if (m_alerts.should_post<listen_failed_alert>())
-				{
-					m_alerts.emplace_alert<listen_failed_alert>(lep.device, bind_ep
-						, last_op, ec, udp_sock_type);
-				}
-				return ret;
+			if (ec && should_log())
+			{
+				session_log("bind to device failed (device: %s): %s"
+					, lep.device.c_str(), ec.message().c_str());
 			}
+#endif // TORRENT_DISABLE_LOGGING
 		}
 #endif
 		ret->udp_sock->sock.bind(udp_bind_ep, ec);
@@ -2044,20 +2022,13 @@ namespace aux {
 			if (!ep.device.empty())
 			{
 				udp_sock->sock.set_option(bind_to_device(ep.device.c_str()), ec);
-				if (ec)
-				{
 #ifndef TORRENT_DISABLE_LOGGING
-					if (should_log())
-					{
-						session_log("bind to device failed (device: %s): %s"
-							, ep.device.c_str(), ec.message().c_str());
-					}
-#endif // TORRENT_DISABLE_LOGGING
-
-					if (m_alerts.should_post<udp_error_alert>())
-						m_alerts.emplace_alert<udp_error_alert>(udp_bind_ep, ec);
-					continue;
+				if (ec && should_log())
+				{
+					session_log("bind to device failed (device: %s): %s"
+						, ep.device.c_str(), ec.message().c_str());
 				}
+#endif // TORRENT_DISABLE_LOGGING
 			}
 #endif
 			udp_sock->sock.bind(udp_bind_ep, ec);
@@ -5038,9 +5009,7 @@ namespace aux {
 			if (ec) return bind_ep;
 
 			bind_ep.address(bind_socket_to_device(m_io_service, s
-				, remote_address.is_v4()
-					? boost::asio::ip::tcp::v4()
-					: boost::asio::ip::tcp::v6()
+				, remote_address.is_v4() ? tcp::v4() : tcp::v6()
 				, ifname.c_str(), bind_ep.port(), ec));
 			return bind_ep;
 		}
