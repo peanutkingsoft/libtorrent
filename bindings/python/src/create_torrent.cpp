@@ -125,6 +125,15 @@ namespace
       ct.add_tracker(url, tier);
     }
 
+    void add_http_seed2(create_torrent& ct, std::string seed)
+    {
+      ct.add_http_seed(seed);
+    }
+    void add_url_seed2(create_torrent& ct, std::string seed)
+    {
+      ct.add_url_seed(seed);
+    }
+
     struct dummy13 {};
     struct dummy14 {};
 }
@@ -219,8 +228,10 @@ void bind_create_torrent()
         .def("set_creator", &create_torrent::set_creator)
         .def("set_hash", &set_hash)
         .def("set_file_hash", &set_file_hash)
-        .def("add_url_seed", &create_torrent::add_url_seed)
-        .def("add_http_seed", &create_torrent::add_http_seed)
+
+        .def("add_url_seed", add_url_seed2, (arg("url")))
+        .def("add_http_seed", add_http_seed2, (arg("url")))
+
         .def("add_node", &add_node)
         .def("add_tracker", add_tracker, (arg("announce_url"), arg("tier") = 0))
         .def("set_priv", &create_torrent::set_priv)
